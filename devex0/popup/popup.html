@@ -275,35 +275,51 @@
   </div>
 
 
-  <!-- Standard Extraction Mode -->
+  <!-- Simplified devex0 Workflow -->
   <div id="extractMode">
-    <label for="selector">selector</label>
-    <input 
-      id="selector" 
-      type="text" 
-      placeholder="auto-detect or css selector"
-      autocomplete="off"
-      spellcheck="false"
-    >
-
-    <label for="mode">extraction mode</label>
-    <select id="mode">
-      <option value="smart">smart extract</option>
-      <option value="html">raw html</option>
-      <option value="text">text content</option>
-      <option value="console">console log</option>
-    </select>
-
-    <div class="button-row">
-      <button id="extract">extract</button>
-      <button id="monitor">monitor</button>
+    <!-- Current URL Display -->
+    <div class="current-url-display" id="urlDisplay" style="display: none;">
+      <div class="url-label">Current Page</div>
+      <div class="url-value" id="currentUrl"></div>
     </div>
 
-    <button id="exportMd" style="width: 100%; margin-bottom: 8px; display: none;">export to markdown</button>
-    
-    <div class="button-row" id="docsIntegration" style="display: none;">
-      <button id="sendToDocs">send to docs</button>
-      <button id="assessDocs">assess docs</button>
+    <!-- Main Extract Button -->
+    <button id="extract" style="width: 100%; margin-bottom: 12px; font-size: 16px; padding: 16px;">
+      EXTRACT
+    </button>
+
+    <!-- Insight Options (Hidden initially) -->
+    <div id="insightOptions" style="display: none;">
+      <div class="recon-phase">Want insights on extracted data?</div>
+      <div class="button-row">
+        <button id="showInsights">yes, analyze</button>
+        <button id="skipInsights">no, done</button>
+      </div>
+    </div>
+
+    <!-- Asset Analysis Results (Hidden initially) -->
+    <div id="analysisResults" style="display: none;">
+      <div class="recon-phase">Asset Analysis Complete</div>
+      
+      <!-- Analysis Summary -->
+      <div id="analysisSummary" style="font-size: 11px; margin-bottom: 12px; padding: 8px; border: 1px solid #ccc; background: #f9f9f9;">
+        <!-- Summary will be populated by JavaScript -->
+      </div>
+
+      <!-- Top Selectors List -->
+      <div id="selectorsList" style="max-height: 200px; overflow-y: auto; margin-bottom: 12px; border: 1px solid #ccc;">
+        <!-- Selectors will be populated by JavaScript -->
+      </div>
+
+      <!-- Actions -->
+      <div class="button-row">
+        <button id="exass">exass</button>
+        <button id="copyAnalysis">copy all</button>
+      </div>
+      
+      <button id="resetWorkflow" style="width: 100%; margin-top: 8px; font-size: 12px;">
+        start over
+      </button>
     </div>
   </div>
 
