@@ -1,6 +1,6 @@
 /**
- * Data Extractor Content Script
- * Performs actual data extraction from web pages
+ * Enhanced Data Extractor
+ * Handles the simplified devex0 workflow extraction requests
  */
 
 class DataExtractor {
