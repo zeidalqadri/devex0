@@ -1,0 +1,66 @@
+{
+  "manifest_version": 3,
+  "name": "Devex0 Multi-Agent Scraper",
+  "description": "Intelligent multi-agent web scraping system with vision AI capabilities for maritime, luxury e-commerce, and financial data extraction.",
+  "version": "1.0.0",
+  "permissions": [
+    "scripting",
+    "activeTab",
+    "storage",
+    "clipboardWrite",
+    "alarms",
+    "notifications",
+    "tabs",
+    "downloads"
+  ],
+  "host_permissions": [
+    "<all_urls>",
+    "https://api.anthropic.com/*",
+    "https://api.openai.com/*",
+    "https://api.qwen.ai/*"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "devex/icon16.png",
+      "32": "devex/icon32.png",
+      "48": "devex/icon48.png",
+      "128": "devex/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background/coordinator.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "utils/messaging.js",
+        "content-scripts/dom-service.js",
+        "content-scripts/site-analyzer.js",
+        "content-scripts/extractor.js",
+        "content-scripts/monitor.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "devex/icon16.png",
+    "32": "devex/icon32.png",
+    "48": "devex/icon48.png",
+    "128": "devex/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "schemas/*.js",
+        "utils/*.js"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
