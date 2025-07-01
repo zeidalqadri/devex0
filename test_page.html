@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .product-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .product-info {
+            padding: 1rem;
+        }
+        .product-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .product-brand {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        .product-price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #e63946;
+            margin-bottom: 0.5rem;
+        }
+        .product-sku {
+            font-size: 0.8rem;
+            color: #999;
+            margin-bottom: 1rem;
+        }
+        .add-to-cart {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+        }
+        .add-to-cart:hover {
+            background-color: #45a049;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        .pagination a {
+            color: black;
+            padding: 8px 16px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            border: 1px solid #ddd;
+            margin: 0 4px;
+        }
+        .pagination a.active {
+            background-color: #4CAF50;
+            color: white;
+            border: 1px solid #4CAF50;
+        }
+        .pagination a:hover:not(.active) {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>E-commerce Test Store</h1>
+    </header>
+    
+    <div class="container">
+        <h2>Featured Products</h2>
+        
+        <div class="product-grid">
+            <!-- Product 1 -->
+            <div class="product-card" data-product-id="P12345">
+                <img src="https://via.placeholder.com/300" alt="Product 1" class="product-image">
+                <div class="product-info">
+                    <div class="product-title">Premium Wireless Headphones</div>
+                    <div class="product-brand">SoundMaster</div>
+                    <div class="product-price">$199.99</div>
+                    <div class="product-sku">SKU: SM-WH-001</div>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+            </div>
+            
+            <!-- Product 2 -->
+            <div class="product-card" data-product-id="P23456">
+                <img src="https://via.placeholder.com/300" alt="Product 2" class="product-image">
+                <div class="product-info">
+                    <div class="product-title">Smart Fitness Watch</div>
+                    <div class="product-brand">TechFit</div>
+                    <div class="product-price">$149.99</div>
+                    <div class="product-sku">SKU: TF-SW-002</div>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+            </div>
+            
+            <!-- Product 3 -->
+            <div class="product-card" data-product-id="P34567">
+                <img src="https://via.placeholder.com/300" alt="Product 3" class="product-image">
+                <div class="product-info">
+                    <div class="product-title">Bluetooth Portable Speaker</div>
+                    <div class="product-brand">SoundMaster</div>
+                    <div class="product-price">$89.99</div>
+                    <div class="product-sku">SKU: SM-BS-003</div>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+            </div>
+            
+            <!-- Product 4 -->
+            <div class="product-card" data-product-id="P45678">
+                <img src="https://via.placeholder.com/300" alt="Product 4" class="product-image">
+                <div class="product-info">
+                    <div class="product-title">Ultra HD Action Camera</div>
+                    <div class="product-brand">VisualPro</div>
+                    <div class="product-price">$249.99</div>
+                    <div class="product-sku">SKU: VP-AC-004</div>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+            </div>
+            
+            <!-- Product 5 -->
+            <div class="product-card" data-product-id="P56789">
+                <img src="https://via.placeholder.com/300" alt="Product 5" class="product-image">
+                <div class="product-info">
+                    <div class="product-title">Wireless Gaming Mouse</div>
+                    <div class="product-brand">GameTech</div>
+                    <div class="product-price">$79.99</div>
+                    <div class="product-sku">SKU: GT-WM-005</div>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+            </div>
+            
+            <!-- Product 6 -->
+            <div class="product-card" data-product-id="P67890">
+                <img src="https://via.placeholder.com/300" alt="Product 6" class="product-image">
+                <div class="product-info">
+                    <div class="product-title">Mechanical Gaming Keyboard</div>
+                    <div class="product-brand">GameTech</div>
+                    <div class="product-price">$129.99</div>
+                    <div class="product-sku">SKU: GT-MK-006</div>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="pagination">
+            <a href="#" class="active">1</a>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">4</a>
+            <a href="#">5</a>
+            <a href="#">Next &raquo;</a>
+        </div>
+    </div>
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org/",
+      "@type": "ItemList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "item": {
+            "@type": "Product",
+            "name": "Premium Wireless Headphones",
+            "image": "https://via.placeholder.com/300",
+            "description": "High-quality wireless headphones with noise cancellation",
+            "brand": {
+              "@type": "Brand",
+              "name": "SoundMaster"
+            },
+            "sku": "SM-WH-001",
+            "mpn": "SM-WH-001",
+            "offers": {
+              "@type": "Offer",
+              "url": "https://example.com/product/P12345",
+              "priceCurrency": "USD",
+              "price": "199.99",
+              "availability": "https://schema.org/InStock"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "item": {
+            "@type": "Product",
+            "name": "Smart Fitness Watch",
+            "image": "https://via.placeholder.com/300",
+            "description": "Advanced fitness tracking smartwatch",
+            "brand": {
+              "@type": "Brand",
+              "name": "TechFit"
+            },
+            "sku": "TF-SW-002",
+            "mpn": "TF-SW-002",
+            "offers": {
+              "@type": "Offer",
+              "url": "https://example.com/product/P23456",
+              "priceCurrency": "USD",
+              "price": "149.99",
+              "availability": "https://schema.org/InStock"
+            }
+          }
+        }
+      ]
+    }
+    </script>
+</body>
+</html>
