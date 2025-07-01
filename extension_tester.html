@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevEx0 Extension Tester</title>
+    <style>
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Consolas', monospace;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-result {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-size: 14px;
+            max-height: 300px;
+            overflow: auto;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .failure {
+            color: red;
+            font-weight: bold;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .selector-item {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .selector-item:hover {
+            background-color: #f5f5f5;
+        }
+        .selector-item.selected {
+            background-color: #e0f7fa;
+        }
+        #selectorsList {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>DevEx0 Extension Tester</h1>
+    <p>This page simulates the functionality of the DevEx0 Chrome Extension for testing purposes.</p>
+
+    <div class="test-section">
+        <h2>1. Test AssetSelectorRanker Algorithm</h2>
+        <button id="loadRankerBtn">Load AssetSelectorRanker</button>
+        <div id="rankerLoadResult" class="test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Extract HTML from Test Page</h2>
+        <button id="extractHtmlBtn">Extract HTML</button>
+        <div id="extractResult" class="test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Analyze HTML with AssetSelectorRanker</h2>
+        <button id="analyzeHtmlBtn" disabled>Analyze HTML</button>
+        <div id="analyzeResult" class="test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Display Ranked Selectors</h2>
+        <div id="selectorsList"></div>
+        <div id="selectorsResult" class="test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>5. Perform Focused Extraction (Exass)</h2>
+        <button id="exassBtn" disabled>Exass Selected Selectors</button>
+        <div id="exassResult" class="test-result"></div>
+    </div>
+
+    <script>
+        // Global variables
+        let assetRanker = null;
+        let extractedHtml = null;
+        let analysisResults = null;
+        let selectedSelectors = new Set();
+
+        // Load the AssetSelectorRanker script
+        document.getElementById('loadRankerBtn').addEventListener('click', async () => {
+            const resultDiv = document.getElementById('rankerLoadResult');
+            
+            try {
+                resultDiv.innerHTML = "Loading AssetSelectorRanker...";
+                
+                // Create a script element to load the AssetSelectorRanker
+                const script = document.createElement('script');
+                script.src = '/app/devex0/utils/asset-selector-ranker.js';
+                
+                // Wait for the script to load
+                await new Promise((resolve, reject) => {
+                    script.onload = resolve;
+                    script.onerror = reject;
+                    document.head.appendChild(script);
+                });
+                
+                // Check if AssetSelectorRanker is available
+                if (typeof AssetSelectorRanker === 'function') {
+                    resultDiv.innerHTML = "<span class='success'>✓ AssetSelectorRanker loaded successfully!</span>";
+                    console.log("AssetSelectorRanker loaded successfully");
+                } else {
+                    throw new Error("AssetSelectorRanker not found after loading script");
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<span class='failure'>✗ Failed to load AssetSelectorRanker: ${error.message}</span>`;
+                console.error("Failed to load AssetSelectorRanker:", error);
+            }
+        });
+
+        // Extract HTML from test page
+        document.getElementById('extractHtmlBtn').addEventListener('click', async () => {
+            const resultDiv = document.getElementById('extractResult');
+            
+            try {
+                resultDiv.innerHTML = "Fetching HTML from test page...";
+                
+                // Fetch the test page HTML
+                const response = await fetch('/app/test_page.html');
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch test page: ${response.status} ${response.statusText}`);
+                }
+                
+                extractedHtml = await response.text();
+                
+                // Show a preview of the HTML
+                const previewLength = 200;
+                const htmlPreview = extractedHtml.length > previewLength 
+                    ? extractedHtml.substring(0, previewLength) + '...' 
+                    : extractedHtml;
+                
+                resultDiv.innerHTML = `<span class='success'>✓ HTML extracted successfully!</span>\nLength: ${extractedHtml.length} characters\nPreview: ${htmlPreview}`;
+                
+                // Enable the analyze button
+                document.getElementById('analyzeHtmlBtn').disabled = false;
+                
+                // Copy to clipboard simulation
+                console.log("HTML copied to clipboard (simulated)");
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<span class='failure'>✗ Failed to extract HTML: ${error.message}</span>`;
+                console.error("Failed to extract HTML:", error);
+            }
+        });
+
+        // Analyze HTML with AssetSelectorRanker
+        document.getElementById('analyzeHtmlBtn').addEventListener('click', () => {
+            const resultDiv = document.getElementById('analyzeResult');
+            
+            try {
+                resultDiv.innerHTML = "Analyzing HTML with AssetSelectorRanker...";
+                
+                if (!extractedHtml) {
+                    throw new Error("No HTML to analyze. Please extract HTML first.");
+                }
+                
+                if (typeof AssetSelectorRanker !== 'function') {
+                    throw new Error("AssetSelectorRanker not loaded. Please load it first.");
+                }
+                
+                // Create a new instance of AssetSelectorRanker
+                assetRanker = new AssetSelectorRanker(extractedHtml);
+                
+                // Get the full analysis
+                analysisResults = assetRanker.getFullAnalysis(25);
+                
+                // Display the analysis summary
+                const summary = analysisResults.summary;
+                resultDiv.innerHTML = `<span class='success'>✓ Analysis completed successfully!</span>\n\n` +
+                    `Total selectors found: ${summary.totalSelectorsFound}\n` +
+                    `Top selectors shown: ${summary.topSelectorsShown}\n` +
+                    `Pagination detected: ${analysisResults.pagination.hasPagination ? 'Yes' : 'No'}\n` +
+                    `Pagination type: ${analysisResults.pagination.type}\n`;
+                
+                // Display the selectors
+                displaySelectors(analysisResults.selectors);
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<span class='failure'>✗ Failed to analyze HTML: ${error.message}</span>`;
+                console.error("Failed to analyze HTML:", error);
+            }
+        });
+
+        // Display ranked selectors
+        function displaySelectors(selectors) {
+            const selectorsListDiv = document.getElementById('selectorsList');
+            const resultDiv = document.getElementById('selectorsResult');
+            
+            selectorsListDiv.innerHTML = '';
+            
+            if (!selectors || selectors.length === 0) {
+                resultDiv.innerHTML = "<span class='failure'>No selectors found</span>";
+                return;
+            }
+            
+            selectors.forEach((item, index) => {
+                const selectorDiv = document.createElement('div');
+                selectorDiv.className = 'selector-item';
+                selectorDiv.dataset.selector = item.selector;
+                
+                selectorDiv.innerHTML = `
+                    <div><strong>${index + 1}. ${item.selector}</strong></div>
+                    <div>Count: ${item.count} | Score: ${item.finalScore.toFixed(2)}</div>
+                `;
+                
+                // Click to select/deselect
+                selectorDiv.addEventListener('click', () => {
+                    toggleSelectorSelection(selectorDiv, item.selector);
+                });
+                
+                selectorsListDiv.appendChild(selectorDiv);
+            });
+            
+            resultDiv.innerHTML = `<span class='success'>✓ Displayed ${selectors.length} selectors</span>`;
+            
+            // Enable the exass button
+            document.getElementById('exassBtn').disabled = false;
+        }
+
+        // Toggle selector selection
+        function toggleSelectorSelection(element, selector) {
+            if (selectedSelectors.has(selector)) {
+                selectedSelectors.delete(selector);
+                element.classList.remove('selected');
+            } else {
+                selectedSelectors.add(selector);
+                element.classList.add('selected');
+            }
+            
+            // Update exass button text
+            const exassBtn = document.getElementById('exassBtn');
+            exassBtn.textContent = selectedSelectors.size > 0 ? 
+                `Exass Selected Selectors (${selectedSelectors.size})` : 'Exass Selected Selectors';
+        }
+
+        // Perform focused extraction (Exass)
+        document.getElementById('exassBtn').addEventListener('click', () => {
+            const resultDiv = document.getElementById('exassResult');
+            
+            try {
+                if (selectedSelectors.size === 0) {
+                    resultDiv.innerHTML = "<span class='failure'>Please select at least one selector first</span>";
+                    return;
+                }
+                
+                resultDiv.innerHTML = `Extracting data using ${selectedSelectors.size} selectors...`;
+                
+                // Parse the HTML
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(extractedHtml, 'text/html');
+                
+                // Extract data for each selected selector
+                const extractionResults = {
+                    url: "https://example.com/test-page",
+                    timestamp: new Date().toISOString(),
+                    selectors: Array.from(selectedSelectors),
+                    totalItems: 0,
+                    data: {}
+                };
+                
+                selectedSelectors.forEach(selector => {
+                    try {
+                        const elements = doc.querySelectorAll(selector);
+                        const items = [];
+                        
+                        elements.forEach(element => {
+                            items.push({
+                                text: element.textContent?.trim() || '',
+                                attributes: Array.from(element.attributes).reduce((obj, attr) => {
+                                    obj[attr.name] = attr.value;
+                                    return obj;
+                                }, {})
+                            });
+                        });
+                        
+                        extractionResults.data[selector] = items;
+                        extractionResults.totalItems += items.length;
+                    } catch (error) {
+                        extractionResults.data[selector] = { error: error.message };
+                    }
+                });
+                
+                // Display the extraction results
+                resultDiv.innerHTML = `<span class='success'>✓ Extracted ${extractionResults.totalItems} items</span>\n\n` +
+                    JSON.stringify(extractionResults, null, 2);
+                
+                // Copy to clipboard simulation
+                console.log("Extraction results copied to clipboard (simulated)");
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<span class='failure'>✗ Failed to extract data: ${error.message}</span>`;
+                console.error("Failed to extract data:", error);
+            }
+        });
+    </script>
+</body>
+</html>
