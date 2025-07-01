@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevEx0 Extension Tester</title>
+    <style>
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Consolas', monospace;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-result {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-size: 14px;
+            max-height: 300px;
+            overflow: auto;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .failure {
+            color: red;
+            font-weight: bold;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .selector-item {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .selector-item:hover {
+            background-color: #f5f5f5;
+        }
+        .selector-item.selected {
+            background-color: #e0f7fa;
+        }
+        #selectorsList {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>DevEx0 Extension Tester</h1>
+    <p>This page simulates the functionality of the DevEx0 Chrome Extension for testing purposes.</p>
+
+    <div class="test-section">
+        <h2>1. Test AssetSelectorRanker Algorithm</h2>
+        <button id="loadRankerBtn">Load AssetSelectorRanker</button>
+        <div id="rankerLoadResult" class="test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Extract HTML from Test Page</h2>
+        <button id="extractHtmlBtn">Extract HTML</button>
+        <div id="extractResult" class="test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Analyze HTML with AssetSelectorRanker</h2>
+        <button id="analyzeHtmlBtn" disabled>Analyze HTML</button>
+        <div id="analyzeResult" class="test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Display Ranked Selectors</h2>
+        <div id="selectorsList"></div>
+        <div id="selectorsResult" class="test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>5. Perform Focused Extraction (Exass)</h2>
+        <button id="exassBtn" disabled>Exass Selected Selectors</button>
+        <div id="exassResult" class="test-result"></div>
+    </div>
+
+    <!-- Embedded Test HTML -->
+    <div id="testHtmlContainer" style="display: none;">
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>E-commerce Test Page</title>
+        </head>
+        <body>
+            <header>
+                <h1>E-commerce Test Store</h1>
+            </header>
+            
+            <div class="container">
+                <h2>Featured Products</h2>
+                
+                <div class="product-grid">
+                    <!-- Product 1 -->
+                    <div class="product-card" data-product-id="P12345">
+                        <img src="https://via.placeholder.com/300" alt="Product 1" class="product-image">
+                        <div class="product-info">
+                            <div class="product-title">Premium Wireless Headphones</div>
+                            <div class="product-brand">SoundMaster</div>
+                            <div class="product-price">$199.99</div>
+                            <div class="product-sku">SKU: SM-WH-001</div>
+                            <button class="add-to-cart">Add to Cart</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Product 2 -->
+                    <div class="product-card" data-product-id="P23456">
+                        <img src="https://via.placeholder.com/300" alt="Product 2" class="product-image">
+                        <div class="product-info">
+                            <div class="product-title">Smart Fitness Watch</div>
+                            <div class="product-brand">TechFit</div>
+                            <div class="product-price">$149.99</div>
+                            <div class="product-sku">SKU: TF-SW-002</div>
+                            <button class="add-to-cart">Add to Cart</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Product 3 -->
+                    <div class="product-card" data-product-id="P34567">
+                        <img src="https://via.placeholder.com/300" alt="Product 3" class="product-image">
+                        <div class="product-info">
+                            <div class="product-title">Bluetooth Portable Speaker</div>
+                            <div class="product-brand">SoundMaster</div>
+                            <div class="product-price">$89.99</div>
+                            <div class="product-sku">SKU: SM-BS-003</div>
+                            <button class="add-to-cart">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="pagination">
+                    <a href="#" class="active">1</a>
+                    <a href="#">2</a>
+                    <a href="#">3</a>
+                    <a href="#">Next &raquo;</a>
+                </div>
+            </div>
+
+            <!-- JSON-LD Structured Data -->
+            <script type="application/ld+json">
+            {
+              "@context": "https://schema.org/",
+              "@type": "ItemList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "item": {
+                    "@type": "Product",
+                    "name": "Premium Wireless Headphones",
+                    "image": "https://via.placeholder.com/300",
+                    "description": "High-quality wireless headphones with noise cancellation",
+                    "brand": {
+                      "@type": "Brand",
+                      "name": "SoundMaster"
+                    },
+                    "sku": "SM-WH-001",
+                    "mpn": "SM-WH-001",
+                    "offers": {
+                      "@type": "Offer",
+                      "url": "https://example.com/product/P12345",
+                      "priceCurrency": "USD",
+                      "price": "199.99",
+                      "availability": "https://schema.org/InStock"
+                    }
+                  }
+                }
+              ]
+            }
+            </script>
+        </body>
+        </html>
+    </div>
+
+    <!-- Embedded AssetSelectorRanker -->
+    <script id="assetSelectorRankerScript">
+        /**
+         * Asset Selector Ranker
+         * JavaScript implementation of the Python AssetSelectorRanker algorithm
+         * Analyzes HTML content to extract and rank CSS selectors based on asset value
+         */
+        
+        class AssetSelectorRanker {
+          constructor(htmlContent) {
+            if (typeof htmlContent !== 'string') {
+              throw new TypeError('htmlContent must be a string');
+            }
+            
+            this.html = htmlContent;
+            this.parser = new DOMParser();
+            this.doc = this.parser.parseFromString(this.html, 'text/html');
+            
+            // Keywords with associated weights, tailored for e-commerce
+            this.keywords = {
+              'sku': 25, 'productid': 25, 'price': 20, 'pricing': 20, 'sale': 18, 'discount': 18,
+              'inventory': 20, 'stock': 20, 'availability': 18, 'productcard': 20,
+              'product': 15, 'item': 15, 'brand': 12, 'designer': 12, 'vendor': 10,
+              'name': 10, 'title': 10, 'details': 8, 'info': 8, 'description': 8,
+              'size': 10, 'color': 8, 'variant': 10, 'cart': 15, 'bag': 15,
+              'checkout': 15, 'purchase': 15, 'add': 12, 'buy': 12,
+              'list': 8, 'grid': 8, 'gallery': 7, 'image': 7, 'main': 5,
+            };
+            
+            // Prioritized list of attributes for generating stable selectors
+            this.STABLE_ATTRIBUTES = [
+              'id', 'data-testid', 'data-product-id', 'data-sku', 'data-cy', 'data-test', 'name'
+            ];
+            
+            // Blocklist of common, unhelpful CSS class prefixes or names
+            this.CLASS_BLOCKLIST = ['ltr-', 's-'];
+            
+            this.rankedSelectors = [];
+          }
+        
+          _getStableSelector(element) {
+            if (!element || !element.tagName) {
+              return null;
+            }
+        
+            const tagName = element.tagName.toLowerCase();
+        
+            // Priority 1: A stable, unique identifier attribute
+            for (const attr of this.STABLE_ATTRIBUTES) {
+              const val = element.getAttribute(attr);
+              if (val && /^[a-zA-Z][a-zA-Z0-9\-_.]*$/.test(val)) {
+                return `${tagName}[${attr}='${val}']`;
+              }
+            }
+        
+            // Priority 2: A meaningful combination of classes, avoiding blocked ones
+            const classList = element.classList;
+            if (classList && classList.length > 0) {
+              const classes = Array.from(classList)
+                .filter(c => !this.CLASS_BLOCKLIST.some(prefix => c.startsWith(prefix)))
+                .sort();
+              
+              if (classes.length > 0) {
+                return `${tagName}.${classes.join('.')}`;
+              }
+            }
+            
+            return null;
+          }
+        
+          _scoreElement(element) {
+            let score = 0;
+        
+            // 1. Score based on attributes (id, class, data-*)
+            let attrsText = '';
+            const attributes = element.attributes;
+            
+            for (let i = 0; i < attributes.length; i++) {
+              const attr = attributes[i];
+              const attrName = attr.name;
+              const attrValue = attr.value;
+              
+              // Join array values (like class) and normalize
+              const attrText = attrValue.replace(/-/g, ' ').replace(/_/g, ' ');
+              
+              // Give higher weight to stable attributes
+              const weight = this.STABLE_ATTRIBUTES.includes(attrName) ? 2.5 : 1.0;
+              attrsText += ` ${attrName.replace('-', ' ')} ${attrText}`.repeat(Math.floor(weight));
+            }
+        
+            attrsText = attrsText.toLowerCase();
+            
+            // Score attributes against keywords
+            for (const [keyword, weight] of Object.entries(this.keywords)) {
+              const regex = new RegExp(`\\b${keyword}\\b`, 'i');
+              if (regex.test(attrsText)) {
+                score += weight;
+              }
+            }
+        
+            // 2. Score based on text content
+            const textContent = element.textContent?.trim().toLowerCase() || '';
+            if (textContent) {
+              // Currency patterns
+              if (/€|\$|£|usd|eur|gbp|myr/i.test(textContent)) {
+                score += 25;
+              }
+              
+              // Action patterns
+              if (/add to bag|add to cart|buy now|add to wishlist/i.test(textContent)) {
+                score += 30;
+              }
+              
+              // Keyword matching in text (weaker signal)
+              for (const [keyword, weight] of Object.entries(this.keywords)) {
+                const regex = new RegExp(`\\b${keyword}\\b`, 'i');
+                if (regex.test(textContent)) {
+                  score += weight * 0.5;
+                }
+              }
+            }
+        
+            // 3. Structural & Microdata Scoring
+            if (element.hasAttribute('itemprop')) {
+              score += 20;
+              const propValue = element.getAttribute('itemprop').toLowerCase();
+              for (const [keyword, weight] of Object.entries(this.keywords)) {
+                if (propValue.includes(keyword)) {
+                  score += weight * 1.5;
+                }
+              }
+            }
+        
+            // JSON-LD scripts get extremely high value
+            if (element.tagName.toLowerCase() === 'script' && 
+                element.getAttribute('type') === 'application/ld+json') {
+              score += 150;
+            }
+            
+            return score;
+          }
+        
+          _learnFromJsonLd() {
+            const jsonLdScripts = this.doc.querySelectorAll('script[type="application/ld+json"]');
+            const allSchemaKeys = new Set();
+            
+            const getAllKeys = (obj, keysSet) => {
+              if (typeof obj === 'object' && obj !== null) {
+                if (Array.isArray(obj)) {
+                  obj.forEach(item => getAllKeys(item, keysSet));
+                } else {
+                  Object.entries(obj).forEach(([key, value]) => {
+                    const sanitizedKey = key.toLowerCase().replace(/[^a-z]/g, '');
+                    if (sanitizedKey) {
+                      keysSet.add(sanitizedKey);
+                    }
+                    getAllKeys(value, keysSet);
+                  });
+                }
+              }
+            };
+        
+            jsonLdScripts.forEach(script => {
+              if (script.textContent) {
+                try {
+                  const data = JSON.parse(script.textContent);
+                  getAllKeys(data, allSchemaKeys);
+                } catch (error) {
+                  // Ignore malformed JSON
+                }
+              }
+            });
+        
+            console.log(`[AssetRanker] Discovered ${allSchemaKeys.size} potential keywords from JSON-LD schemas`);
+            
+            // Add new keywords with default weight
+            allSchemaKeys.forEach(key => {
+              if (!this.keywords[key]) {
+                this.keywords[key] = 10;
+              }
+            });
+          }
+        
+          _detectPagination() {
+            const paginationIndicators = [
+              // Common pagination selectors
+              '.pagination', '.pager', '.page-numbers', '.page-nav',
+              '[class*="pagination"]', '[class*="pager"]', '[class*="page"]',
+              
+              // Next/Previous buttons
+              'a[href*="page"]', 'button[class*="next"]', 'button[class*="prev"]',
+              '[aria-label*="next"]', '[aria-label*="previous"]', '[aria-label*="page"]',
+              
+              // Load more buttons
+              '[class*="load-more"]', '[class*="show-more"]', '[class*="expand"]',
+              'button[class*="more"]', 'a[class*="more"]',
+              
+              // Infinite scroll indicators
+              '[class*="infinite"]', '[class*="endless"]', '[data-infinite]'
+            ];
+        
+            const paginationData = {
+              hasPagination: false,
+              type: 'none',
+              indicators: [],
+              totalPages: null,
+              currentPage: null,
+              hasNext: false,
+              hasPrev: false,
+              hasLoadMore: false,
+              hasInfiniteScroll: false
+            };
+        
+            // Check for each type of pagination
+            for (const selector of paginationIndicators) {
+              const elements = this.doc.querySelectorAll(selector);
+              if (elements.length > 0) {
+                paginationData.hasPagination = true;
+                paginationData.indicators.push({
+                  selector,
+                  count: elements.length,
+                  sampleText: elements[0].textContent?.trim().slice(0, 50) || ''
+                });
+        
+                // Determine pagination type
+                if (selector.includes('infinite') || selector.includes('endless')) {
+                  paginationData.hasInfiniteScroll = true;
+                  paginationData.type = 'infinite-scroll';
+                } else if (selector.includes('more') || selector.includes('load') || selector.includes('expand')) {
+                  paginationData.hasLoadMore = true;
+                  if (paginationData.type === 'none') paginationData.type = 'load-more';
+                } else if (selector.includes('page') || selector.includes('pagination')) {
+                  if (paginationData.type === 'none') paginationData.type = 'numbered';
+                }
+              }
+            }
+        
+            // Try to extract current page and total pages
+            const pageNumberElements = this.doc.querySelectorAll('[class*="current"], [class*="active"], [aria-current="page"]');
+            if (pageNumberElements.length > 0) {
+              const currentPageText = pageNumberElements[0].textContent?.trim();
+              const pageNumber = parseInt(currentPageText);
+              if (!isNaN(pageNumber)) {
+                paginationData.currentPage = pageNumber;
+              }
+            }
+        
+            // Check for next/previous availability
+            paginationData.hasNext = this.doc.querySelectorAll('a[href*="next"], button[class*="next"], [aria-label*="next"]').length > 0;
+            paginationData.hasPrev = this.doc.querySelectorAll('a[href*="prev"], button[class*="prev"], [aria-label*="prev"]').length > 0;
+        
+            return paginationData;
+          }
+        
+          rankSelectors() {
+            console.log('[AssetRanker] Starting selector ranking analysis...');
+            
+            // Learn from JSON-LD schemas
+            this._learnFromJsonLd();
+            
+            // Analyze all elements
+            const selectorScores = new Map();
+            const allElements = this.doc.querySelectorAll('*');
+            
+            for (const element of allElements) {
+              const score = this._scoreElement(element);
+              
+              if (score > 15) { // Confidence threshold
+                const selector = this._getStableSelector(element);
+                if (selector) {
+                  if (!selectorScores.has(selector)) {
+                    selectorScores.set(selector, { score: 0, count: 0 });
+                  }
+                  
+                  const data = selectorScores.get(selector);
+                  data.score += score;
+                  data.count += 1;
+                }
+              }
+            }
+        
+            // Calculate final scores and create ranking
+            const finalRanks = [];
+            for (const [selector, data] of selectorScores.entries()) {
+              // Boost score based on repetition count (logarithmic boost)
+              const finalScore = data.count > 0 ? 
+                data.score * (1 + Math.log10(data.count)) : 
+                data.score;
+              
+              finalRanks.push({
+                selector,
+                finalScore: Math.round(finalScore * 100) / 100,
+                totalBaseScore: Math.round(data.score * 100) / 100,
+                count: data.count,
+                avgScore: Math.round((data.score / data.count) * 100) / 100
+              });
+            }
+            
+            // Sort by final score
+            this.rankedSelectors = finalRanks.sort((a, b) => b.finalScore - a.finalScore);
+            
+            console.log(`[AssetRanker] Analysis complete. Found ${this.rankedSelectors.length} ranked selectors`);
+            return this.rankedSelectors;
+          }
+        
+          getTopSelectors(n = 25) {
+            if (this.rankedSelectors.length === 0) {
+              this.rankSelectors();
+            }
+            return this.rankedSelectors.slice(0, n);
+          }
+        
+          getFullAnalysis(topN = 25) {
+            const selectors = this.getTopSelectors(topN);
+            const pagination = this._detectPagination();
+            
+            return {
+              selectors,
+              pagination,
+              summary: {
+                totalSelectorsFound: this.rankedSelectors.length,
+                topSelectorsShown: Math.min(topN, this.rankedSelectors.length),
+                hasPagination: pagination.hasPagination,
+                paginationType: pagination.type,
+                analysisDate: new Date().toISOString()
+              }
+            };
+          }
+        
+          exportAnalysis(topN = 25) {
+            const analysis = this.getFullAnalysis(topN);
+            const lines = [];
+            
+            lines.push('='.repeat(60));
+            lines.push(`DEVEX0 ASSET ANALYSIS - ${analysis.summary.analysisDate}`);
+            lines.push('='.repeat(60));
+            lines.push('');
+            
+            // Summary
+            lines.push('SUMMARY:');
+            lines.push(`- Total selectors analyzed: ${analysis.summary.totalSelectorsFound}`);
+            lines.push(`- Top selectors shown: ${analysis.summary.topSelectorsShown}`);
+            lines.push(`- Pagination detected: ${analysis.pagination.hasPagination ? 'Yes' : 'No'}`);
+            if (analysis.pagination.hasPagination) {
+              lines.push(`- Pagination type: ${analysis.pagination.type}`);
+            }
+            lines.push('');
+            
+            // Pagination details
+            if (analysis.pagination.hasPagination) {
+              lines.push('PAGINATION ANALYSIS:');
+              lines.push(`- Type: ${analysis.pagination.type}`);
+              lines.push(`- Has next page: ${analysis.pagination.hasNext}`);
+              lines.push(`- Has previous page: ${analysis.pagination.hasPrev}`);
+              lines.push(`- Has load more: ${analysis.pagination.hasLoadMore}`);
+              lines.push(`- Has infinite scroll: ${analysis.pagination.hasInfiniteScroll}`);
+              if (analysis.pagination.currentPage) {
+                lines.push(`- Current page: ${analysis.pagination.currentPage}`);
+              }
+              lines.push('');
+            }
+            
+            // Top selectors
+            lines.push(`TOP ${topN} RANKED ASSET SELECTORS:`);
+            lines.push('-'.repeat(60));
+            
+            analysis.selectors.forEach((item, index) => {
+              lines.push(`${index + 1}. ${item.selector}`);
+              lines.push(`   Score: ${item.finalScore} | Count: ${item.count} | Avg: ${item.avgScore}`);
+              lines.push('');
+            });
+            
+            return lines.join('\n');
+          }
+        }
+        
+        // Make available globally
+        if (typeof window !== 'undefined') {
+          window.AssetSelectorRanker = AssetSelectorRanker;
+        }
+    </script>
+
+    <!-- Main Test Script -->
+    <script>
+        // Global variables
+        let assetRanker = null;
+        let extractedHtml = null;
+        let analysisResults = null;
+        let selectedSelectors = new Set();
+
+        // Load the AssetSelectorRanker script
+        document.getElementById('loadRankerBtn').addEventListener('click', async () => {
+            const resultDiv = document.getElementById('rankerLoadResult');
+            
+            try {
+                resultDiv.innerHTML = "Loading AssetSelectorRanker...";
+                
+                // Check if AssetSelectorRanker is available
+                if (typeof AssetSelectorRanker === 'function') {
+                    resultDiv.innerHTML = "<span class='success'>✓ AssetSelectorRanker loaded successfully!</span>";
+                    console.log("AssetSelectorRanker loaded successfully");
+                } else {
+                    throw new Error("AssetSelectorRanker not found");
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<span class='failure'>✗ Failed to load AssetSelectorRanker: ${error.message}</span>`;
+                console.error("Failed to load AssetSelectorRanker:", error);
+            }
+        });
+
+        // Extract HTML from test page
+        document.getElementById('extractHtmlBtn').addEventListener('click', async () => {
+            const resultDiv = document.getElementById('extractResult');
+            
+            try {
+                resultDiv.innerHTML = "Extracting HTML from test page...";
+                
+                // Get the embedded test HTML
+                extractedHtml = document.getElementById('testHtmlContainer').innerHTML;
+                
+                // Show a preview of the HTML
+                const previewLength = 200;
+                const htmlPreview = extractedHtml.length > previewLength 
+                    ? extractedHtml.substring(0, previewLength) + '...' 
+                    : extractedHtml;
+                
+                resultDiv.innerHTML = `<span class='success'>✓ HTML extracted successfully!</span>\nLength: ${extractedHtml.length} characters\nPreview: ${htmlPreview}`;
+                
+                // Enable the analyze button
+                document.getElementById('analyzeHtmlBtn').disabled = false;
+                
+                // Copy to clipboard simulation
+                console.log("HTML copied to clipboard (simulated)");
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<span class='failure'>✗ Failed to extract HTML: ${error.message}</span>`;
+                console.error("Failed to extract HTML:", error);
+            }
+        });
+
+        // Analyze HTML with AssetSelectorRanker
+        document.getElementById('analyzeHtmlBtn').addEventListener('click', () => {
+            const resultDiv = document.getElementById('analyzeResult');
+            
+            try {
+                resultDiv.innerHTML = "Analyzing HTML with AssetSelectorRanker...";
+                
+                if (!extractedHtml) {
+                    throw new Error("No HTML to analyze. Please extract HTML first.");
+                }
+                
+                if (typeof AssetSelectorRanker !== 'function') {
+                    throw new Error("AssetSelectorRanker not loaded. Please load it first.");
+                }
+                
+                // Create a new instance of AssetSelectorRanker
+                assetRanker = new AssetSelectorRanker(extractedHtml);
+                
+                // Get the full analysis
+                analysisResults = assetRanker.getFullAnalysis(25);
+                
+                // Display the analysis summary
+                const summary = analysisResults.summary;
+                resultDiv.innerHTML = `<span class='success'>✓ Analysis completed successfully!</span>\n\n` +
+                    `Total selectors found: ${summary.totalSelectorsFound}\n` +
+                    `Top selectors shown: ${summary.topSelectorsShown}\n` +
+                    `Pagination detected: ${analysisResults.pagination.hasPagination ? 'Yes' : 'No'}\n` +
+                    `Pagination type: ${analysisResults.pagination.type}\n`;
+                
+                // Display the selectors
+                displaySelectors(analysisResults.selectors);
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<span class='failure'>✗ Failed to analyze HTML: ${error.message}</span>`;
+                console.error("Failed to analyze HTML:", error);
+            }
+        });
+
+        // Display ranked selectors
+        function displaySelectors(selectors) {
+            const selectorsListDiv = document.getElementById('selectorsList');
+            const resultDiv = document.getElementById('selectorsResult');
+            
+            selectorsListDiv.innerHTML = '';
+            
+            if (!selectors || selectors.length === 0) {
+                resultDiv.innerHTML = "<span class='failure'>No selectors found</span>";
+                return;
+            }
+            
+            selectors.forEach((item, index) => {
+                const selectorDiv = document.createElement('div');
+                selectorDiv.className = 'selector-item';
+                selectorDiv.dataset.selector = item.selector;
+                
+                selectorDiv.innerHTML = `
+                    <div><strong>${index + 1}. ${item.selector}</strong></div>
+                    <div>Count: ${item.count} | Score: ${item.finalScore.toFixed(2)}</div>
+                `;
+                
+                // Click to select/deselect
+                selectorDiv.addEventListener('click', () => {
+                    toggleSelectorSelection(selectorDiv, item.selector);
+                });
+                
+                selectorsListDiv.appendChild(selectorDiv);
+            });
+            
+            resultDiv.innerHTML = `<span class='success'>✓ Displayed ${selectors.length} selectors</span>`;
+            
+            // Enable the exass button
+            document.getElementById('exassBtn').disabled = false;
+        }
+
+        // Toggle selector selection
+        function toggleSelectorSelection(element, selector) {
+            if (selectedSelectors.has(selector)) {
+                selectedSelectors.delete(selector);
+                element.classList.remove('selected');
+            } else {
+                selectedSelectors.add(selector);
+                element.classList.add('selected');
+            }
+            
+            // Update exass button text
+            const exassBtn = document.getElementById('exassBtn');
+            exassBtn.textContent = selectedSelectors.size > 0 ? 
+                `Exass Selected Selectors (${selectedSelectors.size})` : 'Exass Selected Selectors';
+        }
+
+        // Perform focused extraction (Exass)
+        document.getElementById('exassBtn').addEventListener('click', () => {
+            const resultDiv = document.getElementById('exassResult');
+            
+            try {
+                if (selectedSelectors.size === 0) {
+                    resultDiv.innerHTML = "<span class='failure'>Please select at least one selector first</span>";
+                    return;
+                }
+                
+                resultDiv.innerHTML = `Extracting data using ${selectedSelectors.size} selectors...`;
+                
+                // Parse the HTML
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(extractedHtml, 'text/html');
+                
+                // Extract data for each selected selector
+                const extractionResults = {
+                    url: "https://example.com/test-page",
+                    timestamp: new Date().toISOString(),
+                    selectors: Array.from(selectedSelectors),
+                    totalItems: 0,
+                    data: {}
+                };
+                
+                selectedSelectors.forEach(selector => {
+                    try {
+                        const elements = doc.querySelectorAll(selector);
+                        const items = [];
+                        
+                        elements.forEach(element => {
+                            items.push({
+                                text: element.textContent?.trim() || '',
+                                attributes: Array.from(element.attributes).reduce((obj, attr) => {
+                                    obj[attr.name] = attr.value;
+                                    return obj;
+                                }, {})
+                            });
+                        });
+                        
+                        extractionResults.data[selector] = items;
+                        extractionResults.totalItems += items.length;
+                    } catch (error) {
+                        extractionResults.data[selector] = { error: error.message };
+                    }
+                });
+                
+                // Display the extraction results
+                resultDiv.innerHTML = `<span class='success'>✓ Extracted ${extractionResults.totalItems} items</span>\n\n` +
+                    JSON.stringify(extractionResults, null, 2);
+                
+                // Copy to clipboard simulation
+                console.log("Extraction results copied to clipboard (simulated)");
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<span class='failure'>✗ Failed to extract data: ${error.message}</span>`;
+                console.error("Failed to extract data:", error);
+            }
+        });
+    </script>
+</body>
+</html>
